@@ -34,7 +34,7 @@ class QualityRunnerTest(MyTestCase):
         runner = PsnrQualityRunner(
             assets=[self.asset],
             logger=None,
-            fifo_mode=False,
+            fifo_mode=True,
             delete_workdir=True,
             result_store=None)
         runner.run(parallelize=False)
@@ -44,7 +44,7 @@ class QualityRunnerTest(MyTestCase):
         runner = SsimQualityRunner(
             assets=[self.asset],
             logger=None,
-            fifo_mode=False,
+            fifo_mode=True,
             delete_workdir=True,
             result_store=None)
         runner.run(parallelize=False)
@@ -54,7 +54,7 @@ class QualityRunnerTest(MyTestCase):
         runner = VmafQualityRunner(
             assets=[self.asset],
             logger=None,
-            fifo_mode=False,
+            fifo_mode=True,
             delete_workdir=True,
             result_store=None)
         runner.run(parallelize=False)
@@ -64,7 +64,7 @@ class QualityRunnerTest(MyTestCase):
         runner = VmafnegQualityRunner(
             assets=[self.asset],
             logger=None,
-            fifo_mode=False,
+            fifo_mode=True,
             delete_workdir=True,
             result_store=None,
         )
@@ -75,7 +75,7 @@ class QualityRunnerTest(MyTestCase):
         runner = VmafspQualityRunner(
             assets=[self.asset],
             logger=None,
-            fifo_mode=False,
+            fifo_mode=True,
             delete_workdir=True,
             result_store=None,
         )

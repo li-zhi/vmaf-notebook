@@ -3,7 +3,7 @@ vmaf-notebook is a dockerized environment to run [VMAF](https://github.com/Netfl
 
 ## Create a docker image
 
-First, pull in the VMAF repo as a submodule and run prepare script:
+First, pull in the VMAF repo as a submodule and run preparation script:
 ```shell
 git submodule update --init --recursive
 ./prepare.sh
