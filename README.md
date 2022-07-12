@@ -18,9 +18,11 @@ docker build -t vmaf-notebook .
 
 To start a docker container from the image created and bash into it:
 ```shell
-docker run -dit -v $(pwd):/opt/project --name vmaf-notebook-container vmaf-notebook
+docker run -dit --volume $(pwd):/opt/project --name vmaf-notebook-container vmaf-notebook
 docker exec -it vmaf-notebook-container bash
 ```
+
+(If you want to mount additional volumes, you can do something like adding a second `--volume /Users:/Users` to mount the entire `/Users` directory in your native OS to the docker container.)
 
 To ensure that the container is configured correctly, run tests by invoking `tox` (this invokes commands in the ./tox.ini file):
 ```shell
