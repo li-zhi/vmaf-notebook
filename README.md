@@ -5,7 +5,7 @@ vmaf-notebook is a dockerized environment to run [VMAF](https://github.com/Netfl
 
 First, pull in the VMAF repo as a submodule and run preparation script:
 ```shell
-git submodule update --init --recursive
+git submodule update --init --recursive --depth 1
 ./prepare.sh
 ```
 
@@ -39,7 +39,7 @@ After use, to exit the container:
 exit
 ```
 
-To stop and remove the container:
+To stop and destroy the container:
 ```shell
 docker rm -f vmaf-notebook-container
 ```
@@ -78,7 +78,7 @@ It computes the per-frame and aggregate VMAF, VMAF-NEG, PSNR, SSIM video quality
 
 The second way is to utilize the Python library's `Asset` and `QualityRunner` classes to construct a script.
 
-Enter the Python environment:
+Enter the Python environment PYTHONPATH environment variable properly set:
 ```shell
 PYTHONPATH=.:vmaf/python python
 ```
@@ -176,4 +176,6 @@ with output .png saved at ./workspace/time_series.png:
 
 To set up the docker image as the Python interpreter Pycharm will help debugging the Python scripts.
 
-To import the docker image created to PyCharm: Preference -> Project -> Python Interpreter -> click on the gear icon -> Add... -> Docker -> Image name is the latest image built; Python interpreter path is `python`.
+To import the docker image created to PyCharm: Menu -> PyCharm -> Preferences... -> Project -> Python Interpreter -> on the upper-right corner, click on the gear icon -> Add... -> Docker -> Image name is the latest image built; Python interpreter path is `python` -> click 'OK'.
+
+On the Project panel on the left, navigate to the directory `vmaf/python` -> right click -> Mark Directory as Sources Root.
