@@ -1,5 +1,6 @@
 pip
-numpy
-matplotlib
 meson
 ninja
+tox
+cython
+numpy
