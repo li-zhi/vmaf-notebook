@@ -176,7 +176,7 @@ with output .png saved at ./workspace/time_series.png:
 
 ## Set up the docker image as Python interpreter in PyCharm Professional
 
-To set up the docker image as the Python interpreter Pycharm will help debugging the Python scripts.
+To set up the docker image as the Python interpreter Pycharm will help debugging the Python scripts. You need PyCharm Professional because that the baseline version does not have the feature to import a docker image as interpreter.
 
 To import the docker image created to PyCharm: Menu -> PyCharm -> Preferences... -> Project -> Python Interpreter -> on the upper-right corner, click on the gear icon -> Add... -> Docker -> Image name is the latest image built; Python interpreter path is `python` -> click 'OK'.
 
