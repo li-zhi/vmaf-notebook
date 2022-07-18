@@ -1,9 +1,9 @@
 from vmaf.core.asset import Asset
-from vmaf.core.quality_runner import PsnrQualityRunner, SsimQualityRunner, VmafQualityRunner
+from vmaf.core.quality_runner import PsnrQualityRunner, SsimQualityRunner, VmafQualityRunner, VmafnegQualityRunner
 from vmaf.tools.misc import MyTestCase
 
 import vmaf_notebook
-from vmaf_notebook.quality_runner import VmafnegQualityRunner, VmafspQualityRunner
+from vmaf_notebook.quality_runner import VmafspQualityRunner
 
 
 class QualityRunnerTest(MyTestCase):
