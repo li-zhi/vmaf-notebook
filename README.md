@@ -174,6 +174,63 @@ with output .png saved at ./workspace/time_series.png:
 
 ![time_series](doc/time_series.png)
 
+## More on constructing an `Asset` object
+
+`Asset` is an essentially class of the VMAF Python library. It provides some degrees of flexibility to construct the input to VMAF or other quality metrics. Above you have seen one example, reproduced below:
+```python
+asset = Asset(dataset="demo", content_id=0, asset_id=0,
+              workdir_root=vmaf_notebook.workdir_path(),
+              ref_path=vmaf_notebook.tests_resource_path('y4m', 'ParkJoy_480x270_50.y4m'),
+              dis_path=vmaf_notebook.tests_resource_path('obu', 'parkjoy_qp160.obu'),
+              asset_dict={
+                  'ref_yuv_type': 'notyuv', 'ref_start_frame': 0, 'ref_end_frame': 2,
+                  'dis_yuv_type': 'notyuv', 'dis_start_frame': 0, 'dis_end_frame': 2,
+                  'fps': 50, 'quality_width': 480, 'quality_height': 270})
+```
+Here both the reference video and distorted video are with type `notyuv`, literally means `not YUV`. This implies that the file must be a non-YUV format that can be automatically recognized by `ffmpeg` (or by `ffprobe`). In this example, both the .y4m (YUV4MPEG) and .obu (elementary stream for AV1) can be recognized by the latest version of `ffmpeg`. 
+
+You may wonder: what if the input reference or distorted video (or both) are YUV format? In this case, since YUV is a header-less format, you will have to manually specify its pixel format and resolution. One example is the following:
+```python
+asset = Asset(dataset="demo", content_id=0, asset_id=0,
+              workdir_root=vmaf_notebook.workdir_path(),
+              ref_path='ParkJoy_480x270_50.yuv',
+              dis_path='parkjoy_qp160.yuv',
+              asset_dict={
+                  'ref_yuv_type': 'yuv420p', 'ref_width': 480, 'ref_height': 270, 'ref_start_frame': 0, 'ref_end_frame': 2,
+                  'dis_yuv_type': 'yuv420p', 'dis_width': 480, 'dis_height': 270, 'dis_start_frame': 0, 'dis_end_frame': 2,
+                  'fps': 50, 'quality_width': 480, 'quality_height': 270})
+```
+In this example, both the reference and distorted videos are both YUV with 420 chroma subsampling and 8-bit depth. For more information on the supported YUV types, refer to the class implementation [here](https://github.com/Netflix/vmaf/blob/01a5f4d25f11314cf2693ea5c7e5adf5437ee1e0/python/vmaf/core/asset.py).
+
+You may notice that there are three resolutions specified: reference resolution (`(ref_width, ref_height)`), distorted resolution (`(dis_width, dis_height)`), and "quality resolution" (`(quality_width, quality_height)`). In the example above they are the same: `(480, 270)`. This is not always the case (refer to the "Computing VMAF at the Right Resolution" section of [this tech blog](https://netflixtechblog.com/vmaf-the-journey-continues-44b51ee9ed12) for the rationale behind). In the more generic case, the reference and distorted videos can be different resolutions, and they can both be rescaled to a "quality resolution" before VMAF is calculated. When rescaling is applicable, the rescaling (or `resampling_type`) can be specified (the default type is `bicubic`). The example below illustrates a 2160p source and a 720p distorted video and having their VMAF to be calculated at 1080p, with the reference scaled by lanczos and the distorted scaled by bicubic:
+```python
+asset = Asset(dataset="demo", content_id=0, asset_id=0,
+              workdir_root=vmaf_notebook.workdir_path(),
+              ref_path='x_3840x2160.yuv',
+              dis_path='x_1280x720.yuv',
+              asset_dict={
+                  'ref_yuv_type': 'yuv420p', 'ref_width': 3840, 'ref_height': 2160, 'ref_resampling_type': 'lanczos', 'ref_start_frame': 0, 'ref_end_frame': 2,
+                  'dis_yuv_type': 'yuv420p', 'dis_width': 1280, 'dis_height': 720, 'dis_resampling_type': 'bicubic', 'dis_start_frame': 0, 'dis_end_frame': 2,
+                  'fps': 50, 'quality_width': 1920, 'quality_height': 1080})
+```
+
+Similar to resolutions, the reference and distorted videos may have different YUV types. It is custom to convert them to a common YUV types before the VMAF calculation. This is specified by the `workfile_yuv_type` field. For example, the following example convert a `yuv422p` reference and a `yuv420p` distorted video both into `yuv444p16le` before VMAF calculation:
+```python
+asset = Asset(dataset="demo", content_id=0, asset_id=0,
+              workdir_root=vmaf_notebook.workdir_path(),
+              ref_path='x_3840x2160.yuv',
+              dis_path='x_1280x720.yuv',
+              asset_dict={
+                  'ref_yuv_type': 'yuv422p', 'ref_width': 3840, 'ref_height': 2160, 'ref_resampling_type': 'lanczos', 'ref_start_frame': 0, 'ref_end_frame': 2,
+                  'dis_yuv_type': 'yuv420p', 'dis_width': 1280, 'dis_height': 720, 'dis_resampling_type': 'bicubic', 'dis_start_frame': 0, 'dis_end_frame': 2,
+                  'fps': 50, 'quality_width': 1920, 'quality_height': 1080, 'workfile_yuv_type': 'yuv444p16le'})
+```
+
+The first example also specified the starting and ending frames of both videos. If not specified, it will assume the decoding starts with the first frame until all the frames are processed. If the two videos are of different frames, it will process until the smaller number of frames are processed.
+
+Lastly, specifying `fps` (frames per second) will help determine the duration of the video (together with the number of frames to process), which in turn will help determine the distorted video's bitrate (in Kbit/sec, or Kbps). Note that `fps` will not impact the VMAF numerical result, since the current VMAF version is frame-rate agnostic (this may change in future versions).
+
+
 ## Set up the docker image as Python interpreter in PyCharm Professional
 
 To set up the docker image as the Python interpreter Pycharm will help debugging the Python scripts. You need PyCharm Professional because that the baseline version does not have the feature to import a docker image as interpreter.
