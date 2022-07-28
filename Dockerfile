@@ -16,5 +16,5 @@ RUN mkdir -p /tools && \
     cd /tools && \
     wget -O ffmpeg.tar.xz https://johnvansickle.com/ffmpeg/builds/ffmpeg-git-amd64-static.tar.xz && \
     tar -xf ffmpeg.tar.xz && \
-    mv ffmpeg-git-20220622-amd64-static ffmpeg && \
+    mv ffmpeg-git-* ffmpeg && \
     rm -f ffmpeg.tar.xz
