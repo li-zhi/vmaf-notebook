@@ -104,8 +104,7 @@ asset = Asset(dataset="demo", content_id=0, asset_id=0,
 
 Then, invoke four instances of `QualityRunner` subclasses:
 ```python
-from vmaf.core.quality_runner import VmafQualityRunner, PsnrQualityRunner, SsimQualityRunner
-from vmaf_notebook.quality_runner import VmafnegQualityRunner
+from vmaf.core.quality_runner import VmafQualityRunner, PsnrQualityRunner, SsimQualityRunner, VmafnegQualityRunner
 
 runners = []
 for QualityRunner in [VmafQualityRunner,
@@ -116,7 +115,8 @@ for QualityRunner in [VmafQualityRunner,
                            logger=None,
                            fifo_mode=True,
                            delete_workdir=True,
-                           result_store=None)
+                           result_store=None,
+                           optional_dict2={'n_threads': 10})
     runners.append(runner)
     runner.run()
     print(f'asset has average {runner.TYPE} score {runner.results[0][runner.get_score_key()]:.4f}')
@@ -237,17 +237,20 @@ Lastly, specifying `fps` (frames per second) will help determine the duration of
 
 ### More on constructing a `QualityRunner` object
 
-There are a number of house-keeping features in construction a `QualityRunner` object, including running on multiple assets in parallel, caching results already computed, etc. One simple example is below:
+There are a number of house-keeping features in construction a `QualityRunner` object, including running with multi-threading, running on multiple assets in parallel, caching results already computed, etc. One simple example is below:
 ```python
 runner = VmafQualityRunner(assets=[asset],
                            logger=None,
                            fifo_mode=True,
                            delete_workdir=True,
-                           result_store=None)
+                           result_store=None,
+                           optional_dict2={'n_threads': 10})
 runner.run()
 print(f'asset has average {runner.TYPE} score {runner.results[0][runner.get_score_key()]:.4f}')
 ```
-Here logger can be assigned to `logging.getLogger()`. `fifo_mode` controls if you want to set intermediate raw videos as a FIFO pipe (`True`), or simply save them to disk before proceeding with VMAF calculation (`False`). I would set the field to `True` generally to save disk space during execution (in particular: parallel execution), but I may turn it to `False` during debugging, since FIFO mode may hide error messages. `delete_workdir` should be set to `True` in general to automatically clean up intermediate files, but setting it to `False` will come handy during debugging. More on the rest of the options below.
+Here logger can be assigned to `logging.getLogger()`. `fifo_mode` controls if you want to set intermediate raw videos as a FIFO pipe (`True`), or simply save them to disk before proceeding with VMAF calculation (`False`). I would set the field to `True` generally to save disk space during execution (in particular: parallel execution), but I may turn it to `False` during debugging, since FIFO mode may hide error messages. `delete_workdir` should be set to `True` in general to automatically clean up intermediate files, but setting it to `False` will come handy during debugging. The `n_threads` in the `optional_dict2` dictionary (forgive the anti-pattern of variable naming!!) indicates that you are running with 10 concurrent threads.
+
+More on the rest of the options below.
 
 If you have more than one assets, you can run them in parallel as below:
 ```python
@@ -255,7 +258,8 @@ runner = VmafQualityRunner(assets=[asset1, asset2],
                            logger=None,
                            fifo_mode=True,
                            delete_workdir=True,
-                           result_store=None)
+                           result_store=None,
+                           optional_dict2={'n_threads': 10})
 runner.run(parallelize=True)
 for result in runner.results:
     print(f'asset has average {runner.TYPE} score {result[runner.get_score_key()]:.4f}')
@@ -269,7 +273,8 @@ runner = VmafQualityRunner(assets=[asset1, asset2],
                            logger=None,
                            fifo_mode=True,
                            delete_workdir=True,
-                           result_store=result_store)
+                           result_store=result_store,
+                           optional_dict2={'n_threads': 10})
 runner.run(parallelize=True)
 for result in runner.results:
     print(f'asset has average {runner.TYPE} score {result[runner.get_score_key()]:.4f}')

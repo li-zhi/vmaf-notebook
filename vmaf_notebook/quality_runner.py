@@ -1,4 +1,3 @@
-import vmaf
 from vmaf.core.quality_runner import VmafQualityRunner
 
 import vmaf_notebook

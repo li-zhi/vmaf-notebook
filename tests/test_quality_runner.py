@@ -1,5 +1,5 @@
 from vmaf.core.asset import Asset
-from vmaf.core.quality_runner import PsnrQualityRunner, SsimQualityRunner, VmafQualityRunner, VmafnegQualityRunner
+from vmaf.core.quality_runner import PsnrQualityRunner, SsimQualityRunner, VmafnegQualityRunner, VmafQualityRunner
 from vmaf.tools.misc import MyTestCase
 
 import vmaf_notebook
@@ -37,6 +37,18 @@ class QualityRunnerTest(MyTestCase):
             fifo_mode=True,
             delete_workdir=True,
             result_store=None)
+        runner.run(parallelize=False)
+        self.assertAlmostEqual(runner.results[0]['PSNR_score'], 41.818631, places=4)
+
+    def test_psnr_3threads(self):
+        runner = PsnrQualityRunner(
+            assets=[self.asset],
+            logger=None,
+            fifo_mode=True,
+            delete_workdir=True,
+            result_store=None,
+            optional_dict2={'n_threads': 3}
+        )
         runner.run(parallelize=False)
         self.assertAlmostEqual(runner.results[0]['PSNR_score'], 41.818631, places=4)
 
